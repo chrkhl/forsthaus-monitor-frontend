@@ -6,12 +6,14 @@ import { LoginData } from './types/LoginData';
 const loginDataKey = "forsthaus-monitor-login-data";
 
 const App = () => {
+  const [readyToRender, setReadyToRender] = useState(false);
   const [loginData, setLoginData] = useState<LoginData | null>(null);
 
   useEffect(() => {
     const storedLoginDataRaw = localStorage.getItem(loginDataKey);
 
     if (!storedLoginDataRaw) {
+      setReadyToRender(true);
       return;
     }
 
@@ -24,16 +26,22 @@ const App = () => {
       !storedLoginData?.latitude ||
       !storedLoginData?.longitude
     ) {
+      setReadyToRender(true);
       return;
     }
 
     setLoginData(storedLoginData);
+    setReadyToRender(true);
   }, []);
 
   const handleLogin = (newLoginData: LoginData) => {
     setLoginData(newLoginData);
     localStorage.setItem(loginDataKey, JSON.stringify(newLoginData));
   };
+
+  if (!readyToRender) {
+    return null;
+  }
 
   return (
     <>

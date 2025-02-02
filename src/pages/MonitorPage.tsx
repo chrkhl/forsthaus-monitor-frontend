@@ -25,6 +25,20 @@ export const MonitorPage = (props: {loginData: LoginData}) => {
     });
   }, []);
 
+  useEffect(() => {
+    const bodyElement = document.querySelector("body");
+
+    if (!bodyElement || !monitoringData) {
+      return;
+    }
+
+    if (monitoringData.nightModeInfo.isInNightMode) {
+      bodyElement.classList.add("night-mode");
+    } else {
+      bodyElement.classList.remove("night-mode");
+    }
+  }, [monitoringData]);
+
   if (!monitoringData) {
     return null;
   }

@@ -42,11 +42,11 @@ export const WeatherCurrent = (props: {wxCurrent: WeatherCurrentData, wxToday: W
         <div className="weather-row">
           <div className="weather-col">
             <img src={iconSunrise} alt="Sunrise" className="icon" />
-            {props.wxCurrent.sunrise} Uhr
+            {props.wxCurrent.sunrise} h
           </div>
           <div className="weather-col">
             <img src={iconSunset} alt="Sunset" className="icon" />
-            {props.wxCurrent.sunset} Uhr
+            {props.wxCurrent.sunset} h
           </div>
         </div>
       </div>

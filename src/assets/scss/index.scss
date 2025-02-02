@@ -16,6 +16,19 @@ body {
   font-size: 14px;
 }
 
+body.night-mode {
+  background-color: #222;
+  color: #fff;
+
+  img {
+    filter: invert(1);
+  }
+
+  hr {
+    border-top: 1px solid #fff;
+  }
+}
+
 article {
   max-width: 480px;
   margin: 0 auto;
@@ -41,8 +54,9 @@ article.login {
 }
 
 hr {
-  margin: 20px 0;
+  margin: 20px 6px;
   height: 1px;
+  border: none;
   border-top: 1px solid black;
 }
 
@@ -134,7 +148,7 @@ hr {
     .icon {
       width: 28px;
       height: 28px;
-      margin-right: 8px;
+      margin-right: 6px;
     }
   }
 }
@@ -184,10 +198,12 @@ hr {
       display: flex;
       flex-direction: column;
       align-items: center;
+      margin-bottom: 8px;
 
       .icon {
         width: 50px;
         height: 50px;
+        margin-bottom: 6px;
       }
     }
 
