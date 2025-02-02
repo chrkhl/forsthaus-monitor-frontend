@@ -7,8 +7,7 @@ import { WeatherCodeIcon } from "./WeatherIcon";
 import { BatteryIcon } from "./BatteryIcon";
 
 interface PvRealTimeProps {
-  wxCode: number;
-  isDay: boolean;
+  wxIcon: string;
   pvRealTimeData: PvRealTimeData;
 }
 
@@ -16,7 +15,7 @@ export const PvRealTime = (props: PvRealTimeProps) => {
   return (
     <>
       <div className="icon-weather-current">
-        <WeatherCodeIcon wxCode={props.wxCode} isDay={props.isDay} />
+        <WeatherCodeIcon wxIcon={props.wxIcon} />
       </div>
       <div className="current-status">
         <div className="status status-battery">

@@ -8,7 +8,7 @@ export const WeatherForecastDay = (props: { weatherForecastData: WeatherForecast
   return (
     <div className="weather-forecast-day">
       <div className="day">
-        <WeatherCodeIcon wxCode={props.weatherForecastData.wxCode} isDay={true} />
+        <WeatherCodeIcon wxIcon={props.weatherForecastData.wxIcon} />
         {props.weatherForecastData.day}
       </div>
       <div className="weather-row">

@@ -30,42 +30,40 @@ import iconWeather96 from "../assets/icons/weather-96.png";
 import iconWeather99 from "../assets/icons/weather-99.png";
 
 const weatherCodeToIconMap = new Map<string, string>([
-  ["0d", iconWeather0d],
-  ["0n", iconWeather0n],
-  ["1d", iconWeather1d],
-  ["1n", iconWeather1n],
-  ["2", iconWeather2],
-  ["3", iconWeather3],
-  ["45", iconWeather45],
-  ["48", iconWeather48],
-  ["51", iconWeather51],
-  ["53", iconWeather53],
-  ["55", iconWeather55],
-  ["56", iconWeather56],
-  ["57", iconWeather57],
-  ["61", iconWeather61],
-  ["63", iconWeather63],
-  ["65", iconWeather65],
-  ["66", iconWeather66],
-  ["67", iconWeather67],
-  ["71", iconWeather71],
-  ["73", iconWeather73],
-  ["75", iconWeather75],
-  ["77", iconWeather77],
-  ["80", iconWeather80],
-  ["81", iconWeather81],
-  ["82", iconWeather82],
-  ["85", iconWeather85],
-  ["86", iconWeather86],
-  ["95", iconWeather95],
-  ["96", iconWeather96],
-  ["99", iconWeather99],
+  ["weather_0_d", iconWeather0d],
+  ["weather_0_n", iconWeather0n],
+  ["weather_1_d", iconWeather1d],
+  ["weather_1_n", iconWeather1n],
+  ["weather_2", iconWeather2],
+  ["weather_3", iconWeather3],
+  ["weather_45", iconWeather45],
+  ["weather_48", iconWeather48],
+  ["weather_51", iconWeather51],
+  ["weather_53", iconWeather53],
+  ["weather_55", iconWeather55],
+  ["weather_56", iconWeather56],
+  ["weather_57", iconWeather57],
+  ["weather_61", iconWeather61],
+  ["weather_63", iconWeather63],
+  ["weather_65", iconWeather65],
+  ["weather_66", iconWeather66],
+  ["weather_67", iconWeather67],
+  ["weather_71", iconWeather71],
+  ["weather_73", iconWeather73],
+  ["weather_75", iconWeather75],
+  ["weather_77", iconWeather77],
+  ["weather_80", iconWeather80],
+  ["weather_81", iconWeather81],
+  ["weather_82", iconWeather82],
+  ["weather_85", iconWeather85],
+  ["weather_86", iconWeather86],
+  ["weather_95", iconWeather95],
+  ["weather_96", iconWeather96],
+  ["weather_99", iconWeather99]
 ]);
 
-export const WeatherCodeIcon = ({ wxCode, isDay }: { wxCode: number, isDay: boolean }) => {
-  const wxCodeKey = [0, 1].includes(wxCode) ? `${wxCode}${isDay ? "d" : "n"}` : `${wxCode}`;
-
-  const icon = weatherCodeToIconMap.get(wxCodeKey);
+export const WeatherCodeIcon = ({ wxIcon }: { wxIcon: string }) => {
+  const icon = weatherCodeToIconMap.get(wxIcon);
 
   if (!icon) {
     return null;

@@ -46,8 +46,7 @@ export const MonitorPage = (props: {loginData: LoginData}) => {
   return (
     <article>
       <PvRealTime
-        wxCode={monitoringData.wxCurr.wxCode}
-        isDay={monitoringData.nightModeInfo.isInNightMode}
+        wxIcon={monitoringData.wxCurr.wxIcon}
         pvRealTimeData={monitoringData.pvRealTime}
       />
 
