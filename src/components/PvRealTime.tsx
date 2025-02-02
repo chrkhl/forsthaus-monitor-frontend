@@ -20,7 +20,7 @@ export const PvRealTime = (props: PvRealTimeProps) => {
       </div>
       <div className="current-status">
         <div className="status status-battery">
-          <BatteryIcon iconIdentifier="battery-100-uncharging" />
+          <BatteryIcon iconIdentifier={props.pvRealTimeData.batIcon} />
           <span className="value">{props.pvRealTimeData.batSoC}</span>
           <span className="value">{props.pvRealTimeData.batPower}</span>
         </div>
