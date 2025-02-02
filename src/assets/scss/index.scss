@@ -1,0 +1,178 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Montserrat",
+  serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 16px;
+}
+
+article {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+hr {
+  margin: 20px 0;
+  height: 1px;
+  border-top: 1px solid black;
+}
+
+.icon-weather-current {
+  text-align: center;
+  margin-bottom: -20px;
+  
+  img {
+    width: 50px;
+  }
+}
+
+.current-status {
+  display: flex;
+  flex-direction: row;
+
+  .status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+
+    .value {
+      font-size: 0.875rem;
+
+      &+.value {
+        font-size: 1rem;
+      }
+    }
+
+    .icon {
+      margin-bottom: 1rem;
+      width: 50px;
+    }
+  }
+}
+
+.pv-production-cumulative {
+  .value {
+    display: block;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 700;
+  }
+  
+  .notes {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    margin-bottom: -1rem;
+  }
+}
+
+.pv-production-periods {
+  display: flex;
+  flex-direction: row;
+  
+  &+.pv-production-periods {
+    margin-top: 1rem;
+  }
+
+  .period {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+
+    .label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.weather-row {
+  display: flex;
+  flex-direction: row;
+  height: 40px;
+
+  .weather-col {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+    font-size: 0.875rem;
+
+    .icon {
+      width: 28px;
+      height: 28px;
+      margin-right: 8px;
+    }
+  }
+}
+
+.weather-current {
+  display: flex;
+  flex-direction: row;
+
+  .left-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+    flex: 1;
+    flex-basis: 200px;
+
+    .temperature {
+      font-size: 3rem;
+      font-weight: 700;
+    }
+
+    .weather-col {
+      padding-right: 0.75rem;
+    }
+  }
+
+  .right-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex: 1;
+    flex-basis: 280px;
+    padding-left: 26px;
+  }
+}
+
+.weather-forecast {
+  display: flex;
+
+  .weather-forecast-day {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+
+    .day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .icon {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    .weather-row {
+      padding-left: 20px;
+    }
+  }
+}
