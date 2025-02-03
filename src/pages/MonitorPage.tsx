@@ -8,21 +8,33 @@ import { LoginData } from '../types/LoginData';
 export const MonitorPage = (props: {loginData: LoginData}) => {
   const [monitoringData, setMonitoringData] = useState<MonitoringData | null>(null);
 
-  useEffect(() => {
+  const getMonitoringData = async () => {
     const body = props.loginData;
 
-    fetch("https://forsthaus-monitor-backend.onrender.com/data", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    }).then(async (response) => {
+    try {
+      const response = await fetch("https://forsthaus-monitor-backend.onrender.com/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify(body)
+      });
+
       if (response.ok) {
         const data = await response.json();
         setMonitoringData(data);
       }
-    });
+    } catch (error) {
+      console.error("Error fetching monitoring data", error);
+    }
+  };
+
+  useEffect(() => {
+    getMonitoringData();
+
+    const intervalId = setInterval(getMonitoringData, 5 * 60 * 1000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   useEffect(() => {
