@@ -7,6 +7,7 @@ export interface WeatherCurrentData {
   wxIcon: string;
   wxDescr: string;
   temp: string;
+  apparentTemp: string;
   windSpeed: string;
   windDir: string;
   humidity: string;

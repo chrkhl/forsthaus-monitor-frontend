@@ -155,33 +155,25 @@ hr {
 
 .weather-current {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  
+  .temperature {
+    font-size: 3rem;
+    font-weight: 700;
+  }
 
-  .left-panel {
-    display: flex;
-    flex-direction: column;
+  .weather-row:first-of-type {
+    height: 4rem;
     align-items: flex-end;
-    justify-content: flex-end;
-    flex: 1;
-    flex-basis: 200px;
-
-    .temperature {
-      font-size: 3rem;
-      font-weight: 700;
-    }
+    margin-top: -10px;
 
     .weather-col {
-      padding-right: 0.75rem;
+      padding-bottom: 6px;
     }
   }
 
-  .right-panel {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    flex: 1;
-    flex-basis: 280px;
-    padding-left: 26px;
+  .weather-col {
+    padding-left: 20px;
   }
 }
 
