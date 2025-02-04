@@ -8,6 +8,7 @@ import { BatteryIcon } from "./BatteryIcon";
 
 interface PvRealTimeProps {
   wxIcon: string;
+  wxDescr: string;
   pvRealTimeData: PvRealTimeData;
   isRefreshing: boolean;
   onRefreshData: () => void;
@@ -18,12 +19,12 @@ export const PvRealTime = (props: PvRealTimeProps) => {
     <>
       { props.isRefreshing &&
         <div className="icon-weather-current is-refreshing">
-          <WeatherCodeIcon wxIcon="weather_0_d" />
+          <WeatherCodeIcon wxIcon="weather_0_d" wxDescr={props.wxDescr} />
         </div>
       }
       { !props.isRefreshing &&
         <div className="icon-weather-current" onClick={props.onRefreshData}>
-          <WeatherCodeIcon wxIcon={props.wxIcon} />
+          <WeatherCodeIcon wxIcon={props.wxIcon} wxDescr="" />
         </div>
       }
       <div className="current-status">

@@ -69,6 +69,7 @@ export const MonitorPage = (props: {loginData: LoginData}) => {
     <article>
       <PvRealTime
         wxIcon={monitoringData.wxCurr.wxIcon}
+        wxDescr={monitoringData.wxCurr.wxDescr}
         pvRealTimeData={monitoringData.pvRealTime}
         isRefreshing={isRefreshing}
         onRefreshData={getMonitoringData}

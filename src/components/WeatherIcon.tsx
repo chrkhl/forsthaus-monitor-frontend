@@ -62,7 +62,7 @@ const weatherCodeToIconMap = new Map<string, string>([
   ["weather_99", iconWeather99]
 ]);
 
-export const WeatherCodeIcon = ({ wxIcon }: { wxIcon: string }) => {
+export const WeatherCodeIcon = ({ wxIcon, wxDescr }: { wxIcon: string, wxDescr: string }) => {
   const icon = weatherCodeToIconMap.get(wxIcon);
 
   if (!icon) {
@@ -70,6 +70,6 @@ export const WeatherCodeIcon = ({ wxIcon }: { wxIcon: string }) => {
   }
 
   return (
-    <img src={icon} alt="Weather" className={`icon ${wxIcon}`} />
+    <img src={icon} alt={wxDescr} title={wxDescr} className={`icon ${wxIcon}`} />
   );
 }
