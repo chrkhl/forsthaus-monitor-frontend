@@ -174,9 +174,12 @@ hr {
   flex-direction: column;
   
   .temperature {
+    display: block;
+    width: 100%;
+    margin-bottom: -6px;
     font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: -6px;
+    text-align: right;
   }
 
   .weather-row:first-of-type {
