@@ -24,7 +24,7 @@ export const PvRealTime = (props: PvRealTimeProps) => {
       }
       { !props.isRefreshing &&
         <div className="icon-weather-current" onClick={props.onRefreshData}>
-          <WeatherCodeIcon wxIcon={props.wxIcon} wxDescr="" />
+          <WeatherCodeIcon wxIcon={props.wxIcon} wxDescr={props.wxDescr} />
         </div>
       }
       <div className="current-status">
