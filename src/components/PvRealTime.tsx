@@ -9,13 +9,24 @@ import { BatteryIcon } from "./BatteryIcon";
 interface PvRealTimeProps {
   wxIcon: string;
   pvRealTimeData: PvRealTimeData;
+  isRefreshing: boolean;
+  onRefreshData: () => void;
 }
 
 export const PvRealTime = (props: PvRealTimeProps) => {
   return (
     <>
-      <div className="icon-weather-current">
-        <WeatherCodeIcon wxIcon={props.wxIcon} />
+      <div
+        className={
+          props.isRefreshing
+            ? "icon-weather-current is-refreshing"
+            : "icon-weather-current"
+        }
+        onClick={props.onRefreshData}
+      >
+        <WeatherCodeIcon
+          wxIcon={props.isRefreshing ? "weather_0_d" : props.wxIcon}
+        />
       </div>
       <div className="current-status">
         <div className="status status-battery">
@@ -35,7 +46,9 @@ export const PvRealTime = (props: PvRealTimeProps) => {
         </div>
         <div className="status status-grid">
           <img src={iconPowerGrid} alt="Power Grid" className="icon" />
-          <span className="value">{props.pvRealTimeData.gridPowPercentage}</span>
+          <span className="value">
+            {props.pvRealTimeData.gridPowPercentage}
+          </span>
           <span className="value">{props.pvRealTimeData.gridPow}</span>
         </div>
       </div>

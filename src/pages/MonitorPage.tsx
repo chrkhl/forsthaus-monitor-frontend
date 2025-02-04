@@ -5,10 +5,15 @@ import { WeatherCurrent } from '../components/WeatherCurrent';
 import { WeatherForecast } from '../components/WeatherForecast';
 import { LoginData } from '../types/LoginData';
 
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const MonitorPage = (props: {loginData: LoginData}) => {
   const [monitoringData, setMonitoringData] = useState<MonitoringData | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const getMonitoringData = async () => {
+    setIsRefreshing(true);
+
     const body = props.loginData;
 
     try {
@@ -21,9 +26,14 @@ export const MonitorPage = (props: {loginData: LoginData}) => {
       if (response.ok) {
         const data = await response.json();
         setMonitoringData(data);
+
+        await wait(750);
+        setIsRefreshing(false);
       }
     } catch (error) {
       console.error("Error fetching monitoring data", error);
+      await wait(750);
+      setIsRefreshing(false);
     }
   };
 
@@ -60,6 +70,8 @@ export const MonitorPage = (props: {loginData: LoginData}) => {
       <PvRealTime
         wxIcon={monitoringData.wxCurr.wxIcon}
         pvRealTimeData={monitoringData.pvRealTime}
+        isRefreshing={isRefreshing}
+        onRefreshData={getMonitoringData}
       />
 
       <hr />
