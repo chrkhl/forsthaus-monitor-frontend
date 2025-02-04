@@ -16,18 +16,16 @@ interface PvRealTimeProps {
 export const PvRealTime = (props: PvRealTimeProps) => {
   return (
     <>
-      <div
-        className={
-          props.isRefreshing
-            ? "icon-weather-current is-refreshing"
-            : "icon-weather-current"
-        }
-        onClick={props.onRefreshData}
-      >
-        <WeatherCodeIcon
-          wxIcon={props.isRefreshing ? "weather_0_d" : props.wxIcon}
-        />
-      </div>
+      { props.isRefreshing &&
+        <div className="icon-weather-current is-refreshing">
+          <WeatherCodeIcon wxIcon="weather_0_d" />
+        </div>
+      }
+      { !props.isRefreshing &&
+        <div className="icon-weather-current" onClick={props.onRefreshData}>
+          <WeatherCodeIcon wxIcon={props.wxIcon} />
+        </div>
+      }
       <div className="current-status">
         <div className="status status-battery">
           <BatteryIcon iconIdentifier={props.pvRealTimeData.batIcon} />
