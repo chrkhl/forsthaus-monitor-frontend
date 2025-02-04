@@ -70,6 +70,6 @@ export const WeatherCodeIcon = ({ wxIcon }: { wxIcon: string }) => {
   }
 
   return (
-    <img src={icon} alt="Weather" className="icon" />
+    <img src={icon} alt="Weather" className={`icon ${wxIcon}`} />
   );
 }

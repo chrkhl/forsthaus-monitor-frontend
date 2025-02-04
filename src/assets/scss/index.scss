@@ -79,7 +79,8 @@ hr {
   }
 
   &.is-refreshing {
-    .icon {
+    // spinning sun icon
+    .icon.weather_0_d {
       animation: rotateIcon 2s linear infinite;
     }
   }
