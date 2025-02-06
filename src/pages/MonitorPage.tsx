@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { WeatherCurrent } from '../components/WeatherCurrent';
 import { WeatherForecast } from '../components/WeatherForecast';
 import { LoginData } from '../types/LoginData';
+import { PvPeriod } from '../components/PvPeriod';
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -88,38 +89,23 @@ export const MonitorPage = (props: {loginData: LoginData}) => {
       <hr />
 
       <div className="pv-production-periods">
-        <div className="period">
-          <span className="label">{monitoringData.pvTodayMinus2.label}</span>
-          <span className="value">{monitoringData.pvTodayMinus2.sumGeneration}</span>
-        </div>
-        <div className="period">
-          <span className="label">{monitoringData.pvTodayMinus1.label}</span>
-          <span className="value">{monitoringData.pvTodayMinus1.sumGeneration}</span>
-        </div>
-        <div className="period">
-          <span className="label">{monitoringData.pvToday.label}</span>
-          <span className="value">{monitoringData.pvToday.sumGeneration}</span>
-        </div>
+        <PvPeriod data={monitoringData.pvTodayMinus2} />
+        <PvPeriod data={monitoringData.pvTodayMinus1} />
+        <PvPeriod data={monitoringData.pvToday} />
       </div>
 
       <div className="pv-production-periods">
-        <div className="period">
-          <span className="label">{monitoringData.pvMonthMinus2.label}</span>
-          <span className="value">{monitoringData.pvMonthMinus2.sumGeneration}</span>
-        </div>
-        <div className="period">
-          <span className="label">{monitoringData.pvMonthMinus1.label}</span>
-          <span className="value">{monitoringData.pvMonthMinus1.sumGeneration}</span>
-        </div>
-        <div className="period">
-          <span className="label">{monitoringData.pvMonth.label}</span>
-          <span className="value">{monitoringData.pvMonth.sumGeneration}</span>
-        </div>
+        <PvPeriod data={monitoringData.pvMonthMinus2} />
+        <PvPeriod data={monitoringData.pvMonthMinus1} />
+        <PvPeriod data={monitoringData.pvMonth} />
       </div>
 
       <hr />
 
-      <WeatherCurrent wxCurrent={monitoringData.wxCurr} wxToday={monitoringData.wxToday} />
+      <WeatherCurrent
+        wxCurrent={monitoringData.wxCurr}
+        wxToday={monitoringData.wxToday}
+      />
 
       <hr />
 
