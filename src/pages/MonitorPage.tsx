@@ -5,10 +5,11 @@ import { WeatherCurrent } from '../components/WeatherCurrent';
 import { WeatherForecast } from '../components/WeatherForecast';
 import { LoginData } from '../types/LoginData';
 import { PvPeriod } from '../components/PvPeriod';
+import iconSettings from '../assets/icons/settings.png';
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const MonitorPage = (props: {loginData: LoginData}) => {
+export const MonitorPage = (props: {loginData: LoginData, onShowLogin: () => void}) => {
   const [monitoringData, setMonitoringData] = useState<MonitoringData | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -30,11 +31,13 @@ export const MonitorPage = (props: {loginData: LoginData}) => {
 
         await wait(750);
         setIsRefreshing(false);
+      } else {
+        throw new Error(`HTTP Status: ${response.status}`);
       }
     } catch (error) {
       console.error("Error fetching monitoring data", error);
-      await wait(750);
       setIsRefreshing(false);
+      props.onShowLogin();
     }
   };
 
@@ -68,6 +71,8 @@ export const MonitorPage = (props: {loginData: LoginData}) => {
 
   return (
     <article>
+      <img src={iconSettings} alt="settings" className="icon settings" onClick={props.onShowLogin} />
+
       <PvRealTime
         wxIcon={monitoringData.wxCurr.wxIcon}
         wxDescr={monitoringData.wxCurr.wxDescr}

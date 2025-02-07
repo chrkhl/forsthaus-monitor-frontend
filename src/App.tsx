@@ -1,40 +1,30 @@
 import { useEffect, useState } from 'react';
-import { LoginPage } from './pages/LoginPage'
+import { SettingsPage } from './pages/SettingsPage'
 import { MonitorPage } from './pages/MonitorPage'
 import { LoginData } from './types/LoginData';
-
-const loginDataKey = "forsthaus-monitor-login-data";
+import { loginDataKey, readLoginDataFromStorage } from './readLoginDataFromStorage';
 
 const App = () => {
   const [readyToRender, setReadyToRender] = useState(false);
+  const [forceLoginVisible, setForceLoginVisible] = useState(false);
   const [loginData, setLoginData] = useState<LoginData | null>(null);
 
   useEffect(() => {
-    const storedLoginDataRaw = localStorage.getItem(loginDataKey);
+    const storedLoginData = readLoginDataFromStorage();
 
-    if (!storedLoginDataRaw) {
-      setReadyToRender(true);
-      return;
+    if (storedLoginData) {
+      setLoginData(storedLoginData);
     }
 
-    const storedLoginData = JSON.parse(storedLoginDataRaw) as LoginData;
-
-    if (
-      !storedLoginData ||
-      !storedLoginData?.token ||
-      !storedLoginData?.serialNumber ||
-      !storedLoginData?.latitude ||
-      !storedLoginData?.longitude
-    ) {
-      setReadyToRender(true);
-      return;
-    }
-
-    setLoginData(storedLoginData);
     setReadyToRender(true);
   }, []);
 
+  const handleShowLogin = () => {
+    setForceLoginVisible(true);
+  };
+
   const handleLogin = (newLoginData: LoginData) => {
+    setForceLoginVisible(false);
     setLoginData(newLoginData);
     localStorage.setItem(loginDataKey, JSON.stringify(newLoginData));
   };
@@ -43,12 +33,19 @@ const App = () => {
     return null;
   }
 
+  const isSettingsPageVisible = !loginData || forceLoginVisible;
+  const isMonitorPageVisible = loginData && !forceLoginVisible;
+
   return (
     <>
-      { !loginData && <LoginPage onLogin={handleLogin} /> }
-      { loginData && <MonitorPage loginData={loginData} /> }
+      {isSettingsPageVisible && (
+        <SettingsPage onLogin={handleLogin} />
+      )}
+      {isMonitorPageVisible && (
+        <MonitorPage loginData={loginData} onShowLogin={handleShowLogin} />
+      )}
     </>
-  )
+  );
 }
 
 export default App

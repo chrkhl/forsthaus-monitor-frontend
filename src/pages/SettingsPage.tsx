@@ -1,18 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { readLoginDataFromStorage } from "../readLoginDataFromStorage";
 
-export const LoginPage = ({ onLogin } : { onLogin: (args: { token: string, serialNumber: string, longitude: string, latitude: string}) => void}) => {
+export const SettingsPage = ({ onLogin } : { onLogin: (args: { token: string, serialNumber: string, longitude: string, latitude: string}) => void}) => {
   const [token, setToken] = useState("");
   const [serialNumber, setSerialNumber] = useState("");
   const [longitude, setLongitude] = useState("");
   const [latitude, setLatitude] = useState("");
+
+  useEffect(() => {
+    const storedLoginData = readLoginDataFromStorage();
+
+    if (!storedLoginData) {
+      return;
+    }
+
+    setToken(storedLoginData.token);
+    setSerialNumber(storedLoginData.serialNumber);
+    setLongitude(storedLoginData.longitude);
+    setLatitude(storedLoginData.latitude);
+  }, []);
 
   const handleLogin = () => {
     onLogin({ token, serialNumber, longitude, latitude });
   }
 
   return (
-    <article className="login">
-      <h1>Login</h1>
+    <article className="settings">
+      <h1>Settings</h1>
 
       <div>
         <label htmlFor="token"></label>
