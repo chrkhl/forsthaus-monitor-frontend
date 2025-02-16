@@ -6,6 +6,7 @@ import { WeatherForecast } from '../components/WeatherForecast';
 import { LoginData } from '../types/LoginData';
 import { PvPeriod } from '../components/PvPeriod';
 import iconSettings from '../assets/icons/settings.png';
+import { EnergyMarketData } from '../components/EnergyMarketData';
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -16,7 +17,10 @@ export const MonitorPage = (props: {loginData: LoginData, onShowLogin: () => voi
   const getMonitoringData = async () => {
     setIsRefreshing(true);
 
-    const body = props.loginData;
+    const body = {
+      ...props.loginData,
+      withMarketData: true
+    };
 
     try {
       const response = await fetch("https://forsthaus-monitor-backend.onrender.com/data", {
@@ -71,7 +75,12 @@ export const MonitorPage = (props: {loginData: LoginData, onShowLogin: () => voi
 
   return (
     <article>
-      <img src={iconSettings} alt="settings" className="icon settings" onClick={props.onShowLogin} />
+      <img
+        src={iconSettings}
+        alt="settings"
+        className="icon settings"
+        onClick={props.onShowLogin}
+      />
 
       <PvRealTime
         wxIcon={monitoringData.wxCurr.wxIcon}
@@ -92,6 +101,12 @@ export const MonitorPage = (props: {loginData: LoginData, onShowLogin: () => voi
       </div>
 
       <hr />
+
+      <EnergyMarketData
+        hourlyPriceCategories={
+          monitoringData.energyMarketData?.hourlyPriceCategories
+        }
+      />
 
       <div className="pv-production-periods">
         <PvPeriod data={monitoringData.pvTodayMinus2} />

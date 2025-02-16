@@ -21,4 +21,7 @@ export interface MonitoringData {
   pvMonth: PvSummaryData;
   pvMonthMinus1: PvSummaryData;
   pvMonthMinus2: PvSummaryData;
+  energyMarketData: {
+    hourlyPriceCategories: number[];
+  };
 }
