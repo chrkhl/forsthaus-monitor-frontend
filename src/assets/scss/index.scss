@@ -154,11 +154,16 @@ hr {
     background-color: #222;
     margin-right: 1px;
 
-    &.price-category-1 { height: 4px; }
-    &.price-category-2 { height: 8px; }
-    &.price-category-3 { height: 12px; }
-    &.price-category-4 { height: 16px; }
-    &.price-category-5 { height: 20px; }
+    &.price-category-1 { height: 2px; }
+    &.price-category-2 { height: 4px; }
+    &.price-category-3 { height: 6px; }
+    &.price-category-4 { height: 8px; }
+    &.price-category-5 { height: 10px; }
+    &.price-category-6 { height: 12px; }
+    &.price-category-7 { height: 14px; }
+    &.price-category-8 { height: 16px; }
+    &.price-category-9 { height: 18px; }
+    &.price-category-10 { height: 20px; }
   }
 }
 
