@@ -38,7 +38,7 @@ body.night-mode {
 article {
   max-width: 480px;
   margin: 0 auto;
-  padding-top: 1rem;
+  padding-top: 12px;
 
   .icon.settings {
     position: absolute;
@@ -68,7 +68,7 @@ article.settings {
 }
 
 hr {
-  margin: 20px 6px;
+  margin: 12px 6px;
   height: 1px;
   border: none;
   border-top: 1px solid black;
@@ -137,13 +137,13 @@ hr {
     display: flex;
     justify-content: space-between;
     font-size: 0.75rem;
-    margin-bottom: -1rem;
+    margin-bottom: -0.75rem;
     padding: 0 1rem;
   }
 }
 
 .energy-market-data {
-  margin: -16px 6px -18px 6px;
+  margin: 6px 6px -10px 6px;
   width: calc(100% - 12px);
   height: 20px;
   display: flex;

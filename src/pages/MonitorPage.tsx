@@ -102,12 +102,6 @@ export const MonitorPage = (props: {loginData: LoginData, onShowLogin: () => voi
 
       <hr />
 
-      <EnergyMarketData
-        hourlyPriceCategories={
-          monitoringData.energyMarketData?.hourlyPriceCategories
-        }
-      />
-
       <div className="pv-production-periods">
         <PvPeriod data={monitoringData.pvTodayMinus2} />
         <PvPeriod data={monitoringData.pvTodayMinus1} />
@@ -120,7 +114,13 @@ export const MonitorPage = (props: {loginData: LoginData, onShowLogin: () => voi
         <PvPeriod data={monitoringData.pvMonth} />
       </div>
 
-      <hr />
+    
+
+      <EnergyMarketData
+        hourlyPriceCategories={
+          monitoringData.energyMarketData?.hourlyPriceCategories
+        }
+      />
 
       <WeatherCurrent
         wxCurrent={monitoringData.wxCurr}
