@@ -5,8 +5,8 @@ import { WeatherCurrent } from '../components/WeatherCurrent';
 import { WeatherForecast } from '../components/WeatherForecast';
 import { LoginData } from '../types/LoginData';
 import { PvPeriod } from '../components/PvPeriod';
-import iconSettings from '../assets/icons/settings.png';
 import { EnergyMarketData } from '../components/EnergyMarketData';
+import iconSettings from '../assets/icons/settings.png';
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -116,11 +116,7 @@ export const MonitorPage = (props: {loginData: LoginData, onShowLogin: () => voi
 
     
 
-      <EnergyMarketData
-        hourlyPriceCategories={
-          monitoringData.energyMarketData?.hourlyPriceCategories
-        }
-      />
+      <EnergyMarketData hourlyPrices={monitoringData.energyMarketData?.hourlyPrices} />
 
       <WeatherCurrent
         wxCurrent={monitoringData.wxCurr}

@@ -1,4 +1,5 @@
 import { NightModeInfo } from "./NightModeInfo";
+import { PriceData } from "./PriceData";
 import { PvRealTimeData } from "./PvRealTimeData";
 import { PvSummaryData } from "./PvSummaryData";
 import { WeatherCurrentData } from "./WeatherCurrentData";
@@ -22,6 +23,6 @@ export interface MonitoringData {
   pvMonthMinus1: PvSummaryData;
   pvMonthMinus2: PvSummaryData;
   energyMarketData: {
-    hourlyPriceCategories: number[];
+    hourlyPrices: Array<PriceData>
   };
 }

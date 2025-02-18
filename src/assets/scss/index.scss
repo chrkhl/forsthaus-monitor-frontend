@@ -30,7 +30,11 @@ body.night-mode {
 
   .energy-market-data {
     .price-category {
-      background-color: #fff;
+      background-color: #222;
+
+      &::after {
+        background-color: #fff;
+      }
     }
   }
 }
@@ -151,19 +155,30 @@ hr {
 
   .price-category {
     flex: 1;
-    background-color: #222;
+    background-color: #FFF;
+    height: 20px;
     margin-right: 1px;
+    position: relative;
 
-    &.price-category-1 { height: 2px; }
-    &.price-category-2 { height: 4px; }
-    &.price-category-3 { height: 6px; }
-    &.price-category-4 { height: 8px; }
-    &.price-category-5 { height: 10px; }
-    &.price-category-6 { height: 12px; }
-    &.price-category-7 { height: 14px; }
-    &.price-category-8 { height: 16px; }
-    &.price-category-9 { height: 18px; }
-    &.price-category-10 { height: 20px; }
+    &::after {
+      content: "";
+      display: block;
+      width: 100%;
+      background-color: #222;
+      position: absolute;
+      bottom: 0;
+    }
+
+    &.price-category-1:after { height: 2px; }
+    &.price-category-2:after { height: 4px; }
+    &.price-category-3:after { height: 6px; }
+    &.price-category-4:after { height: 8px; }
+    &.price-category-5:after { height: 10px; }
+    &.price-category-6:after { height: 12px; }
+    &.price-category-7:after { height: 14px; }
+    &.price-category-8:after { height: 16px; }
+    &.price-category-9:after { height: 18px; }
+    &.price-category-10:after { height: 20px; }
   }
 }
 

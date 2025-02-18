@@ -1,19 +1,22 @@
+import { PriceData } from "../types/PriceData";
+
 export const EnergyMarketData = ({
-  hourlyPriceCategories,
+  hourlyPrices,
 }: {
-  hourlyPriceCategories: number[];
+  hourlyPrices: Array<PriceData>
 }) => {
-  if (!hourlyPriceCategories?.length) {
+  if (!hourlyPrices?.length) {
     return null;
   }
 
   return (
     <>
       <div className="energy-market-data">
-        {hourlyPriceCategories.map((priceCategory, index) => (
+        {hourlyPrices.map((item, index) => (
           <div
-            key={`${index}-${{ priceCategory }}`}
-            className={`price-category price-category-${priceCategory}`}
+            key={`${index}-${item.priceCategory}`}
+            className={`price-category price-category-${item.priceCategory}`}
+            title={`${item.time}: ${item.pricePerKWh}`}
           />
         ))}
       </div>
