@@ -34,7 +34,7 @@ const getGridValue = (data: PvRealTimeData) => {
   }
 
   if (data.gridMode === "sell") {
-    return `-${data.gridPow}`;
+    return `-${data.feedinPow}`;
   }
 
   return "0,00 kW";
