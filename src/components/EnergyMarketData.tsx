@@ -13,7 +13,7 @@ interface PriceStats {
 
 const calculatePriceStats = (hourlyPrices: Array<PriceData>): PriceStats => {
   if (!hourlyPrices?.length) {
-    return { current: null, min: null, max: null, cheapHours: null, expensiveHours: null, trend: null };
+    return { current: null, min: null, max: null, cheapHours: null, expensiveHours: null, trend: null, avgDiff: null };
   }
 
   // Get current hour (0-23)
