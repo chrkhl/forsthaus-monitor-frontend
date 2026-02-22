@@ -38,8 +38,12 @@ body.night-mode {
     }
   }
 
-  .energy-price-details .price-periods .period {
+  .energy-price-details {
     color: #fff;
+
+    .price-periods .period {
+      color: #fff;
+    }
   }
 }
 
@@ -187,20 +191,37 @@ hr {
 }
 
 .energy-price-details {
-  margin-top: 1.5rem;
   color: #000;
-  overflow: hidden;
-  animation: expandDetails 0.25s ease-out;
+  transition: all 0.45s ease-out;
 
-  @keyframes expandDetails {
-    from {
-      max-height: 0;
-      opacity: 0;
-    }
-    to {
-      max-height: 300px;
-      opacity: 1;
-    }
+  // Collapsed-State (initial/nach Schließen)
+  &--collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    transform: translateY(-10px);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  // Expanded-State (beim Öffnen/geöffnet)
+  &--expanded {
+    max-height: 120px;
+    opacity: 1;
+    margin-top: 1.5rem;
+    transform: translateY(0);
+    overflow: visible;
+    pointer-events: auto;
+  }
+
+  // Collapsing-State (beim Schließen)
+  &--collapsing {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    transform: translateY(-10px);
+    overflow: hidden;
+    transition: all 0.45s ease-in;
   }
 
   .price-periods {
@@ -225,6 +246,12 @@ hr {
 
       .value {
         font-size: 1rem;
+      }
+
+      .time {
+        font-size: 0.75rem;
+        opacity: 0.7;
+        margin-top: 0.25rem;
       }
     }
   }

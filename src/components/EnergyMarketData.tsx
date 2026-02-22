@@ -8,6 +8,7 @@ interface PriceStats {
   cheapHours: string | null;
   expensiveHours: string | null;
   trend: string | null;
+  avgDiff: string | null;
 }
 
 const calculatePriceStats = (hourlyPrices: Array<PriceData>): PriceStats => {
@@ -35,10 +36,10 @@ const calculatePriceStats = (hourlyPrices: Array<PriceData>): PriceStats => {
   // Calculate trend for next 3 hours
   let trend: string | null = null;
   if (currentPrice && currentIndex >= 0 && currentIndex < hourlyPrices.length - 1) {
-    const next3Hours = hourlyPrices.slice(currentIndex + 1, currentIndex + 4);
-    if (next3Hours.length > 0) {
+    const next4Hours = hourlyPrices.slice(currentIndex + 1, currentIndex + 5);
+    if (next4Hours.length > 0) {
       const currentPriceValue = parseFloat(currentPrice.pricePerKWh);
-      const avgNextPrice = next3Hours.reduce((sum, item) => sum + parseFloat(item.pricePerKWh), 0) / next3Hours.length;
+      const avgNextPrice = next4Hours.reduce((sum, item) => sum + parseFloat(item.pricePerKWh), 0) / next4Hours.length;
       const priceDiff = avgNextPrice - currentPriceValue;
       const absDiff = Math.abs(priceDiff);
 
@@ -46,11 +47,11 @@ const calculatePriceStats = (hourlyPrices: Array<PriceData>): PriceStats => {
         trend = "➡ stabil";
       } else if (priceDiff < 0) {
         // Falling prices
-        const arrow = absDiff >= 5.0 ? "⬇⬇" : "⬇";
+        const arrow = absDiff >= 5.0 ? "&#9660;&#9660;" : "&#9660;";
         trend = `${arrow} ${priceDiff.toFixed(1)} ct`;
       } else {
         // Rising prices
-        const arrow = absDiff >= 5.0 ? "⬆⬆" : "⬆";
+        const arrow = absDiff >= 5.0 ? "&#9650;&#9650;" : "&#9650;";
         trend = `${arrow} +${priceDiff.toFixed(1)} ct`;
       }
     }
@@ -145,6 +146,20 @@ const calculatePriceStats = (hourlyPrices: Array<PriceData>): PriceStats => {
     expensiveHoursRange = extractTimeRange(range.start, range.end);
   }
 
+  // Calculate average price and difference to current
+  let avgDiff: string | null = null;
+  if (currentPrice) {
+    const avgPrice = hourlyPrices.reduce((sum, item) =>
+      sum + parseFloat(item.pricePerKWh), 0) / hourlyPrices.length;
+    const currentPriceValue = parseFloat(currentPrice.pricePerKWh);
+    const diff = currentPriceValue - avgPrice;
+
+    // Format with sign and 1 decimal place
+    avgDiff = diff >= 0
+      ? `+${diff.toFixed(1)} ct`
+      : `${diff.toFixed(1)} ct`;
+  }
+
   return {
     current: currentPrice
       ? { price: currentPrice.pricePerKWh, time: currentPrice.time }
@@ -154,6 +169,7 @@ const calculatePriceStats = (hourlyPrices: Array<PriceData>): PriceStats => {
     cheapHours: cheapHoursRange,
     expensiveHours: expensiveHoursRange,
     trend,
+    avgDiff,
   };
 };
 
@@ -163,6 +179,36 @@ export const EnergyMarketData = ({
   hourlyPrices: Array<PriceData>
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [animationState, setAnimationState] = useState<'collapsed' | 'expanding' | 'collapsing'>('collapsed');
+
+  const handleToggle = () => {
+    if (isExpanded) {
+      // Schließen: Erst collapsing-Animation starten
+      setAnimationState('collapsing');
+      // Nach 250ms: State auf collapsed setzen
+      setTimeout(() => {
+        setIsExpanded(false);
+        setAnimationState('collapsed');
+      }, 250);
+    } else {
+      // Öffnen: State sofort setzen, dann Animation starten
+      setIsExpanded(true);
+      setTimeout(() => {
+        setAnimationState('expanding');
+      }, 10);
+    }
+  };
+
+  const getDetailsClassName = () => {
+    const baseClass = 'energy-price-details';
+    if (!isExpanded && animationState === 'collapsed') {
+      return `${baseClass} ${baseClass}--collapsed`;
+    }
+    if (animationState === 'collapsing') {
+      return `${baseClass} ${baseClass}--collapsing`;
+    }
+    return `${baseClass} ${baseClass}--expanded`;
+  };
 
   if (!hourlyPrices?.length) {
     return null;
@@ -174,7 +220,7 @@ export const EnergyMarketData = ({
     <>
       <div
         className="energy-market-data"
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleToggle}
         style={{ cursor: "pointer" }}
       >
         {hourlyPrices.map((item, index) => (
@@ -186,47 +232,51 @@ export const EnergyMarketData = ({
         ))}
       </div>
 
-      {isExpanded && (
-        <div className="energy-price-details">
-          <div className="price-periods">
-            <div className="period">
-              <span className="label">Minimum</span>
-              <span className="value">{stats.min?.price || "-"}</span>
-            </div>
-            <div className="period">
-              <span className="label">Maximum</span>
-              <span className="value">{stats.max?.price || "-"}</span>
-            </div>
-            <div className="period">
-              <span className="label">Aktuell</span>
-              <span className="value">{stats.current?.price || "-"}</span>
-            </div>
+      <div className={getDetailsClassName()}>
+        <div className="price-periods">
+          <div className="period">
+            <span className="label">Minimum</span>
+            <span className="value">{stats.min?.price || "-"}</span>
+            <span className="time">{stats.min?.time || ""} Uhr</span>
           </div>
-
-          {(stats.cheapHours || stats.expensiveHours || stats.trend) && (
-            <div className="price-periods">
-              {stats.cheapHours && (
-                <div className="period">
-                  <span className="label">Günstig</span>
-                  <span className="value">{stats.cheapHours}</span>
-                </div>
-              )}
-              {stats.expensiveHours && (
-                <div className="period">
-                  <span className="label">Teuer</span>
-                  <span className="value">{stats.expensiveHours}</span>
-                </div>
-              )}
-              {stats.trend && (
-                <div className="period">
-                  <span className="label">Tendenz</span>
-                  <span className="value">{stats.trend}</span>
-                </div>
-              )}
-            </div>
-          )}
+          <div className="period">
+            <span className="label">Maximum</span>
+            <span className="value">{stats.max?.price || "-"}</span>
+            <span className="time">{stats.max?.time || ""} Uhr</span>
+          </div>
+          <div className="period">
+            <span className="label">Aktuell</span>
+            <span className="value">{stats.current?.price || "-"}</span>
+            <span className="time">Ø {stats.avgDiff || ""}</span>
+          </div>
         </div>
-      )}
+
+        {(stats.cheapHours || stats.expensiveHours || stats.trend) && (
+          <div className="price-periods">
+            {stats.cheapHours && (
+              <div className="period">
+                <span className="label">Günstig</span>
+                <span className="value">{stats.cheapHours}</span>
+              </div>
+            )}
+            {stats.expensiveHours && (
+              <div className="period">
+                <span className="label">Teuer</span>
+                <span className="value">{stats.expensiveHours}</span>
+              </div>
+            )}
+            {stats.trend && (
+              <div className="period">
+                <span className="label">Tendenz (4h)</span>
+                <span
+                  className="value"
+                  dangerouslySetInnerHTML={{ __html: stats.trend }}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       <hr />
     </>
