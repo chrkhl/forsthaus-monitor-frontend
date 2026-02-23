@@ -1,6 +1,17 @@
 import { useState } from "react";
 import { PriceData } from "../types/PriceData";
 
+// Constants
+const PRICE_THRESHOLD = 10.0; // ct/kWh
+const TREND_STABLE_THRESHOLD = 0.3;
+const TREND_DOUBLE_ARROW_THRESHOLD = 5.0;
+const CHEAP_CATEGORY_MIN = 1;
+const CHEAP_CATEGORY_MAX = 3;
+const EXPENSIVE_CATEGORY_MIN = 8;
+const EXPENSIVE_CATEGORY_MAX = 10;
+const ANIMATION_DURATION = 250; // ms
+const ANIMATION_DELAY = 10; // ms
+
 interface PriceStats {
   current: { price: string; time: string } | null;
   min: { price: string; time: string } | null;
@@ -11,153 +22,122 @@ interface PriceStats {
   avgDiff: string | null;
 }
 
-const calculatePriceStats = (hourlyPrices: Array<PriceData>): PriceStats => {
+// Helper function to parse German price format
+const parsePrice = (priceStr: string): number => {
+  return parseFloat(priceStr.replace(',', '.'));
+};
+
+// Helper function to find longest sequence in array
+const findLongestSequence = (
+  items: PriceData[],
+  predicate: (category: number) => boolean
+): { start: number; end: number } | null => {
+  let longest: { start: number; end: number; length: number } | null = null;
+  let current: { start: number; length: number } | null = null;
+
+  items.forEach((item, index) => {
+    if (predicate(item.priceCategory)) {
+      if (!current) {
+        current = { start: index, length: 1 };
+      } else {
+        current.length++;
+      }
+
+      if (!longest || current.length > longest.length) {
+        longest = { start: current.start, end: index, length: current.length };
+      }
+    } else {
+      current = null;
+    }
+  });
+
+  return longest ? { start: longest.start, end: longest.end } : null;
+};
+
+// Helper function to extract time range
+const extractTimeRange = (
+  hourlyPrices: PriceData[],
+  startIndex: number,
+  endIndex: number
+): string => {
+  const startTime = hourlyPrices[startIndex].time.match(/^(\d{1,2}:\d{2})/)?.[1] || "";
+  const endTime = hourlyPrices[endIndex].time.match(/-\s*(\d{1,2}:\d{2})/)?.[1] || "";
+  return `${startTime} - ${endTime}`;
+};
+
+const calculatePriceStats = (hourlyPrices: PriceData[]): PriceStats => {
   if (!hourlyPrices?.length) {
     return { current: null, min: null, max: null, cheapHours: null, expensiveHours: null, trend: null, avgDiff: null };
   }
 
-  // Get current hour (0-23)
   const currentHour = new Date().getHours();
 
-  // Find current price and index
+  // Single pass: find current price, min/max, and calculate average
   let currentIndex = -1;
-  const currentPrice = hourlyPrices.find((item, index) => {
-    const timeMatch = item.time.match(/^(\d{1,2}):(\d{2})/);
-    if (timeMatch) {
-      const hour = parseInt(timeMatch[1], 10);
-      if (hour === currentHour) {
+  let currentPrice: PriceData | null = null;
+  let minPrice = hourlyPrices[0];
+  let maxPrice = hourlyPrices[0];
+  let minPriceValue = parsePrice(hourlyPrices[0].pricePerKWh);
+  let maxPriceValue = minPriceValue;
+  let priceSum = 0;
+
+  hourlyPrices.forEach((item, index) => {
+    const price = parsePrice(item.pricePerKWh);
+    priceSum += price;
+
+    // Check if this is current hour
+    if (currentIndex === -1) {
+      const timeMatch = item.time.match(/^(\d{1,2}):(\d{2})/);
+      if (timeMatch && parseInt(timeMatch[1], 10) === currentHour) {
         currentIndex = index;
-        return true;
+        currentPrice = item;
       }
     }
-    return false;
+
+    // Update min/max
+    if (price < minPriceValue) {
+      minPrice = item;
+      minPriceValue = price;
+    }
+    if (price > maxPriceValue) {
+      maxPrice = item;
+      maxPriceValue = price;
+    }
   });
 
-  // Calculate trend for next 3 hours
+  const avgPrice = priceSum / hourlyPrices.length;
+
+  // Calculate trend for next 4 hours
   let trend: string | null = null;
   if (currentPrice && currentIndex >= 0 && currentIndex < hourlyPrices.length - 1) {
     const next4Hours = hourlyPrices.slice(currentIndex + 1, currentIndex + 5);
     if (next4Hours.length > 0) {
-      const currentPriceValue = parseFloat(currentPrice.pricePerKWh);
-      const avgNextPrice = next4Hours.reduce((sum, item) => sum + parseFloat(item.pricePerKWh), 0) / next4Hours.length;
+      const currentPriceValue = parsePrice(currentPrice.pricePerKWh);
+      const avgNextPrice = next4Hours.reduce((sum, item) => sum + parsePrice(item.pricePerKWh), 0) / next4Hours.length;
       const priceDiff = avgNextPrice - currentPriceValue;
       const absDiff = Math.abs(priceDiff);
 
-      if (absDiff < 0.3) {
+      if (absDiff < TREND_STABLE_THRESHOLD) {
         trend = "➡ stabil";
-      } else if (priceDiff < 0) {
-        // Falling prices
-        const arrow = absDiff >= 5.0 ? "&#9660;&#9660;" : "&#9660;";
-        trend = `${arrow} ${priceDiff.toFixed(1)} ct`;
       } else {
-        // Rising prices
-        const arrow = absDiff >= 5.0 ? "&#9650;&#9650;" : "&#9650;";
-        trend = `${arrow} +${priceDiff.toFixed(1)} ct`;
+        const arrow = absDiff >= TREND_DOUBLE_ARROW_THRESHOLD
+          ? (priceDiff < 0 ? "&#9660;&#9660;" : "&#9650;&#9650;")
+          : (priceDiff < 0 ? "&#9660;" : "&#9650;");
+        const sign = priceDiff < 0 ? "" : "+";
+        trend = `${arrow} ${sign}${priceDiff.toFixed(1)} ct`;
       }
     }
   }
 
-  // Find min and max prices using priceCategory
-  let minPrice = hourlyPrices[0];
-  let maxPrice = hourlyPrices[0];
+  // Find longest cheap and expensive periods
+  const longestCheap = findLongestSequence(hourlyPrices, (cat) => cat >= CHEAP_CATEGORY_MIN && cat <= CHEAP_CATEGORY_MAX);
+  const longestExpensive = findLongestSequence(hourlyPrices, (cat) => cat >= EXPENSIVE_CATEGORY_MIN && cat <= EXPENSIVE_CATEGORY_MAX);
 
-  hourlyPrices.forEach((item) => {
-    if (item.priceCategory < minPrice.priceCategory) {
-      minPrice = item;
-    }
-    if (item.priceCategory > maxPrice.priceCategory) {
-      maxPrice = item;
-    }
-  });
-
-  // Find longest sequence of cheap hours (priceCategory 1-3)
-  type Range = { start: number; end: number; length: number };
-  let longestCheap: Range | null = null;
-  let currentCheap: { start: number; length: number } | null = null;
-
-  hourlyPrices.forEach((item, index) => {
-    if (item.priceCategory >= 1 && item.priceCategory <= 3) {
-      if (currentCheap === null) {
-        currentCheap = { start: index, length: 1 };
-      } else {
-        currentCheap.length++;
-      }
-
-      const currentLength = currentCheap.length;
-      const currentStart = currentCheap.start;
-
-      if (longestCheap === null || currentLength > longestCheap.length) {
-        longestCheap = {
-          start: currentStart,
-          end: index,
-          length: currentLength,
-        };
-      }
-    } else {
-      currentCheap = null;
-    }
-  });
-
-  // Find longest sequence of expensive hours (priceCategory 8-10)
-  let longestExpensive: Range | null = null;
-  let currentExpensive: { start: number; length: number } | null = null;
-
-  hourlyPrices.forEach((item, index) => {
-    if (item.priceCategory >= 8 && item.priceCategory <= 10) {
-      if (currentExpensive === null) {
-        currentExpensive = { start: index, length: 1 };
-      } else {
-        currentExpensive.length++;
-      }
-
-      const currentLength = currentExpensive.length;
-      const currentStart = currentExpensive.start;
-
-      if (longestExpensive === null || currentLength > longestExpensive.length) {
-        longestExpensive = {
-          start: currentStart,
-          end: index,
-          length: currentLength,
-        };
-      }
-    } else {
-      currentExpensive = null;
-    }
-  });
-
-  // Extract time ranges
-  const extractTimeRange = (startIndex: number, endIndex: number): string => {
-    const startTime = hourlyPrices[startIndex].time.match(/^(\d{1,2}:\d{2})/)?.[1] || "";
-    const endTimeMatch = hourlyPrices[endIndex].time.match(/-\s*(\d{1,2}:\d{2})/);
-    const endTime = endTimeMatch?.[1] || "";
-    return `${startTime} - ${endTime}`;
-  };
-
-  // Calculate time ranges with explicit null checks
-  let cheapHoursRange: string | null = null;
-  if (longestCheap) {
-    const range = longestCheap as Range;
-    cheapHoursRange = extractTimeRange(range.start, range.end);
-  }
-
-  let expensiveHoursRange: string | null = null;
-  if (longestExpensive) {
-    const range = longestExpensive as Range;
-    expensiveHoursRange = extractTimeRange(range.start, range.end);
-  }
-
-  // Calculate average price and difference to current
+  // Calculate average difference
   let avgDiff: string | null = null;
   if (currentPrice) {
-    const avgPrice = hourlyPrices.reduce((sum, item) =>
-      sum + parseFloat(item.pricePerKWh), 0) / hourlyPrices.length;
-    const currentPriceValue = parseFloat(currentPrice.pricePerKWh);
-    const diff = currentPriceValue - avgPrice;
-
-    // Format with sign and 1 decimal place
-    avgDiff = diff >= 0
-      ? `+${diff.toFixed(1)} ct`
-      : `${diff.toFixed(1)} ct`;
+    const diff = parsePrice(currentPrice.pricePerKWh) - avgPrice;
+    avgDiff = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)} ct`;
   }
 
   return {
@@ -166,8 +146,8 @@ const calculatePriceStats = (hourlyPrices: Array<PriceData>): PriceStats => {
       : null,
     min: { price: minPrice.pricePerKWh, time: minPrice.time.split(" - ")[0] || "" },
     max: { price: maxPrice.pricePerKWh, time: maxPrice.time.split(" - ")[0] || "" },
-    cheapHours: cheapHoursRange,
-    expensiveHours: expensiveHoursRange,
+    cheapHours: longestCheap ? extractTimeRange(hourlyPrices, longestCheap.start, longestCheap.end) : null,
+    expensiveHours: longestExpensive ? extractTimeRange(hourlyPrices, longestExpensive.start, longestExpensive.end) : null,
     trend,
     avgDiff,
   };
@@ -176,7 +156,7 @@ const calculatePriceStats = (hourlyPrices: Array<PriceData>): PriceStats => {
 export const EnergyMarketData = ({
   hourlyPrices,
 }: {
-  hourlyPrices: Array<PriceData>
+  hourlyPrices: PriceData[]
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [animationState, setAnimationState] = useState<'collapsed' | 'expanding' | 'collapsing'>('collapsed');
@@ -185,17 +165,17 @@ export const EnergyMarketData = ({
     if (isExpanded) {
       // Schließen: Erst collapsing-Animation starten
       setAnimationState('collapsing');
-      // Nach 250ms: State auf collapsed setzen
+      // Nach ANIMATION_DURATION: State auf collapsed setzen
       setTimeout(() => {
         setIsExpanded(false);
         setAnimationState('collapsed');
-      }, 250);
+      }, ANIMATION_DURATION);
     } else {
       // Öffnen: State sofort setzen, dann Animation starten
       setIsExpanded(true);
       setTimeout(() => {
         setAnimationState('expanding');
-      }, 10);
+      }, ANIMATION_DELAY);
     }
   };
 
@@ -221,19 +201,25 @@ export const EnergyMarketData = ({
       <div
         className="energy-market-data"
         onClick={handleToggle}
-        style={{ cursor: "pointer" }}
+        style={{ cursor: "pointer", position: "relative" }}
       >
-        {hourlyPrices.map((item, index) => (
-          <div
-            key={`${index}-${item.priceCategory}`}
-            className={`price-category price-category-${item.priceCategory}`}
-            title={`${item.time}: ${item.pricePerKWh}`}
-          />
-        ))}
+        {hourlyPrices.map((item, index) => {
+          const price = parsePrice(item.pricePerKWh);
+          const isAboveThreshold = price > PRICE_THRESHOLD;
+
+          return (
+            <div
+              key={`${index}-${item.priceCategory}`}
+              className={`price-category price-category-${item.priceCategory} ${isAboveThreshold ? 'above-threshold' : ''}`}
+              title={`${item.time}: ${item.pricePerKWh}`}
+            />
+          );
+        })}
       </div>
 
       <div className={getDetailsClassName()}>
-        <div className="price-periods">
+        <div className="price-details-content">
+          <div className="price-periods">
           <div className="period">
             <span className="label">Minimum</span>
             <span className="value">{stats.min?.price || "-"}</span>
@@ -276,6 +262,7 @@ export const EnergyMarketData = ({
             )}
           </div>
         )}
+        </div>
       </div>
 
       <hr />

@@ -1,6 +1,6 @@
 import { PvRealTime } from '../components/PvRealTime';
 import { MonitoringData } from '../types/MonitoringData';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { WeatherCurrent } from '../components/WeatherCurrent';
 import { WeatherForecast } from '../components/WeatherForecast';
 import { LoginData } from '../types/LoginData';
@@ -8,22 +8,37 @@ import { PvPeriod } from '../components/PvPeriod';
 import { EnergyMarketData } from '../components/EnergyMarketData';
 import iconSettings from '../assets/icons/settings.png';
 
+// Constants
+const BACKEND_PROD = 'https://forsthaus-monitor-backend.onrender.com';
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+const LOADING_DELAY = 750; // ms
+
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const MonitorPage = (props: {loginData: LoginData, onShowLogin: () => void}) => {
+// API base URL depends on environment
+// In dev mode, always use Vite proxy (which routes to local or remote based on mode)
+// In production, call Render backend directly
+const API_BASE_URL = import.meta.env.DEV
+  ? '/api'  // Dev: use Vite proxy (target configured in vite.config.ts based on mode)
+  : BACKEND_PROD;  // Production: direct call
+
+export const MonitorPage = ({ loginData, onShowLogin }: {
+  loginData: LoginData;
+  onShowLogin: () => void;
+}) => {
   const [monitoringData, setMonitoringData] = useState<MonitoringData | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const getMonitoringData = async () => {
+  const getMonitoringData = useCallback(async () => {
     setIsRefreshing(true);
 
     const body = {
-      ...props.loginData,
+      ...loginData,
       withMarketData: true
     };
 
     try {
-      const response = await fetch("https://forsthaus-monitor-backend.onrender.com/data", {
+      const response = await fetch(`${API_BASE_URL}/data`, {
         method: "POST",
         headers: { "Content-Type": "application/json"},
         body: JSON.stringify(body)
@@ -33,27 +48,37 @@ export const MonitorPage = (props: {loginData: LoginData, onShowLogin: () => voi
         const data = await response.json();
         setMonitoringData(data);
 
-        await wait(750);
+        await wait(LOADING_DELAY);
         setIsRefreshing(false);
       } else {
-        throw new Error(`HTTP Status: ${response.status}`);
+        // Try to get error details from response
+        let errorDetails = `HTTP Status: ${response.status}`;
+        try {
+          const errorBody = await response.text();
+          if (errorBody) {
+            errorDetails += ` - ${errorBody}`;
+          }
+        } catch {
+          // Ignore if we can't read the body
+        }
+        throw new Error(errorDetails);
       }
     } catch (error) {
       console.error("Error fetching monitoring data", error);
       setIsRefreshing(false);
-      props.onShowLogin();
+      onShowLogin();
     }
-  };
+  }, [loginData, onShowLogin]);
 
   useEffect(() => {
     getMonitoringData();
 
-    const intervalId = setInterval(getMonitoringData, 5 * 60 * 1000);
+    const intervalId = setInterval(getMonitoringData, REFRESH_INTERVAL);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [getMonitoringData]);
 
   useEffect(() => {
     const bodyElement = document.querySelector("body");
@@ -79,7 +104,7 @@ export const MonitorPage = (props: {loginData: LoginData, onShowLogin: () => voi
         src={iconSettings}
         alt="settings"
         className="icon settings"
-        onClick={props.onShowLogin}
+        onClick={onShowLogin}
       />
 
       <PvRealTime

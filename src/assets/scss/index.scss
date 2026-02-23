@@ -1,3 +1,56 @@
+// ============================================
+// Variables
+// ============================================
+
+// Colors
+$color-dark: #222;
+$color-light: #fff;
+
+// Spacing
+$spacing-xs: 0.25rem;   // 4px
+$spacing-sm: 0.5rem;    // 8px
+$spacing-md: 0.75rem;   // 12px
+$spacing-lg: 1rem;      // 16px
+$spacing-xl: 1.5rem;    // 24px
+$spacing-xxl: 3rem;     // 48px
+
+// Font sizes
+$font-size-xs: 0.7rem;
+$font-size-sm: 0.75rem;
+$font-size-base: 0.875rem;
+$font-size-md: 1rem;
+$font-size-lg: 2.5rem;
+$font-size-xl: 3rem;
+
+// Transitions
+$transition-base: all 0.45s ease-out;
+$transition-collapse: all 0.45s ease-in;
+
+// Dimensions
+$max-width-article: 480px;
+$icon-size-sm: 16px;
+$icon-size-md: 28px;
+$icon-size-lg: 50px;
+
+// ============================================
+// Mixins
+// ============================================
+
+@mixin flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@mixin flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+// ============================================
+// Base Styles
+// ============================================
+
 *,
 *:before,
 *:after {
@@ -8,8 +61,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: "Montserrat",
-  serif;
+  font-family: "Montserrat", serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
@@ -17,61 +69,63 @@ body {
 }
 
 body.night-mode {
-  background-color: #222;
-  color: #fff;
+  background-color: $color-dark;
+  color: $color-light;
 
   img {
     filter: invert(1);
   }
 
   hr {
-    border-top: 1px solid #fff;
+    border-top: 1px solid $color-light;
   }
 
   .energy-market-data {
     .price-category {
-      background-color: #222;
+      background-color: $color-dark;
 
       &::after {
-        background-color: #fff;
+        background-color: $color-light;
+      }
+
+      &.above-threshold::before {
+        background-color: $color-light;
       }
     }
   }
 
   .energy-price-details {
-    color: #fff;
+    color: $color-light;
 
     .price-periods .period {
-      color: #fff;
+      color: $color-light;
     }
   }
 }
 
 article {
-  max-width: 480px;
+  max-width: $max-width-article;
   margin: 0 auto;
-  padding-top: 12px;
+  padding-top: $spacing-md;
 
   .icon.settings {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 16px;
-    height: 16px;
+    top: $spacing-sm;
+    right: $spacing-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
   }
 }
 
 article.settings {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  @include flex-column-center;
 
   h1 {
     text-align: center;
   }
 
   div, button {
-    margin-top: 0.375rem;
+    margin-top: $spacing-xs;
   }
 
   input, button {
@@ -80,10 +134,10 @@ article.settings {
 }
 
 hr {
-  margin: 12px 6px;
+  margin: $spacing-md 6px;
   height: 1px;
   border: none;
-  border-top: 1px solid black;
+  border-top: 1px solid $color-dark;
 }
 
 @keyframes rotateIcon {
@@ -99,9 +153,9 @@ hr {
 .icon-weather-current {
   text-align: center;
   margin-bottom: -10px;
-  
+
   img {
-    width: 50px;
+    width: $icon-size-lg;
   }
 
   &.is-refreshing {
@@ -113,26 +167,23 @@ hr {
 }
 
 .current-status {
-  display: flex;
-  flex-direction: row;
+  @include flex-row;
 
   .status {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    @include flex-column-center;
     flex: 1;
 
     .value {
-      font-size: 0.875rem;
+      font-size: $font-size-base;
 
       &+.value {
-        font-size: 1rem;
+        font-size: $font-size-md;
       }
     }
 
     .icon {
-      margin-bottom: 1rem;
-      width: 50px;
+      margin-bottom: $spacing-lg;
+      width: $icon-size-lg;
     }
   }
 }
@@ -141,16 +192,16 @@ hr {
   .value {
     display: block;
     text-align: center;
-    font-size: 3rem;
+    font-size: $font-size-xl;
     font-weight: 700;
   }
-  
+
   .notes {
     display: flex;
     justify-content: space-between;
-    font-size: 0.75rem;
-    margin-bottom: -0.75rem;
-    padding: 0 1rem;
+    font-size: $font-size-sm;
+    margin-bottom: -$spacing-md;
+    padding: 0 $spacing-lg;
   }
 }
 
@@ -163,7 +214,7 @@ hr {
 
   .price-category {
     flex: 1;
-    background-color: #FFF;
+    background-color: $color-light;
     height: 20px;
     margin-right: 1px;
     position: relative;
@@ -172,7 +223,7 @@ hr {
       content: "";
       display: block;
       width: 100%;
-      background-color: #222;
+      background-color: $color-dark;
       position: absolute;
       bottom: 0;
     }
@@ -187,132 +238,127 @@ hr {
     &.price-category-8:after { height: 16px; }
     &.price-category-9:after { height: 18px; }
     &.price-category-10:after { height: 20px; }
+
+    // Thick line at bottom for prices above threshold
+    &.above-threshold::before {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 2px;
+      background-color: $color-dark;
+      position: absolute;
+      bottom: -3px;
+      z-index: 1;
+    }
   }
 }
 
 .energy-price-details {
-  color: #000;
-  transition: all 0.45s ease-out;
+  color: $color-dark;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out;
 
   // Collapsed-State (initial/nach Schließen)
   &--collapsed {
     max-height: 0;
-    opacity: 0;
-    margin-top: 0;
-    transform: translateY(-10px);
-    overflow: hidden;
-    pointer-events: none;
   }
 
   // Expanded-State (beim Öffnen/geöffnet)
   &--expanded {
-    max-height: 120px;
-    opacity: 1;
-    margin-top: 1.5rem;
-    transform: translateY(0);
-    overflow: visible;
-    pointer-events: auto;
+    max-height: 130px;
   }
 
   // Collapsing-State (beim Schließen)
   &--collapsing {
     max-height: 0;
-    opacity: 0;
-    margin-top: 0;
-    transform: translateY(-10px);
-    overflow: hidden;
-    transition: all 0.45s ease-in;
+    transition: max-height 0.5s ease-in-out;
+  }
+
+  .price-details-content {
+    margin-top: $spacing-xl;
   }
 
   .price-periods {
-    display: flex;
-    flex-direction: row;
+    @include flex-row;
 
     &+.price-periods {
-      margin-top: 1rem;
+      margin-top: $spacing-lg;
     }
 
     .period {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      @include flex-column-center;
       flex: 1;
 
       .label {
-        font-size: 0.875rem;
+        font-size: $font-size-base;
         font-weight: 700;
-        margin-bottom: 0.5rem;
+        margin-bottom: $spacing-sm;
       }
 
       .value {
-        font-size: 1rem;
+        font-size: $font-size-md;
       }
 
       .time {
-        font-size: 0.75rem;
+        font-size: $font-size-sm;
         opacity: 0.7;
-        margin-top: 0.25rem;
+        margin-top: $spacing-xs;
       }
     }
   }
 }
 
 .pv-production-periods {
-  display: flex;
-  flex-direction: row;
-  
+  @include flex-row;
+
   &+.pv-production-periods {
-    margin-top: 1rem;
+    margin-top: $spacing-lg;
   }
 
   .period {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    @include flex-column-center;
     flex: 1;
 
     .label {
-      font-size: 0.875rem;
+      font-size: $font-size-base;
       font-weight: 700;
-      margin-bottom: 0.5rem;
+      margin-bottom: $spacing-sm;
     }
 
     .value.small {
-      margin-top: 0.5rem;
-      font-size: 0.7rem;
+      margin-top: $spacing-sm;
+      font-size: $font-size-xs;
     }
   }
 }
 
 .weather-row {
-  display: flex;
-  flex-direction: row;
+  @include flex-row;
   height: 40px;
 
   .weather-col {
-    display: flex;
-    flex-direction: row;
+    @include flex-row;
     align-items: center;
     flex: 1;
-    font-size: 0.875rem;
+    font-size: $font-size-base;
 
     .icon {
-      width: 28px;
-      height: 28px;
+      width: $icon-size-md;
+      height: $icon-size-md;
       margin-right: 6px;
     }
   }
 }
 
 .weather-current {
-  display: flex;
-  flex-direction: column;
-  
+  @include flex-column-center;
+  align-items: stretch;
+
   .temperature {
     display: block;
     width: 100%;
     margin-bottom: -6px;
-    font-size: 2.5rem;
+    font-size: $font-size-lg;
     font-weight: 700;
     text-align: right;
   }
@@ -336,20 +382,17 @@ hr {
   display: flex;
 
   .weather-forecast-day {
-    display: flex;
+    @include flex-column-center;
     flex: 1;
-    flex-direction: column;
     justify-content: center;
 
     .day {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 8px;
+      @include flex-column-center;
+      margin-bottom: $spacing-sm;
 
       .icon {
-        width: 50px;
-        height: 50px;
+        width: $icon-size-lg;
+        height: $icon-size-lg;
         margin-bottom: 6px;
       }
     }
