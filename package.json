@@ -8,6 +8,7 @@
     "dev": "vite",
     "dev:remote": "vite --mode remote",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy" : "npm run build",

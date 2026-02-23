@@ -32,10 +32,12 @@ const findLongestSequence = (
   items: PriceData[],
   predicate: (category: number) => boolean
 ): { start: number; end: number } | null => {
-  let longest: { start: number; end: number; length: number } | null = null;
+  type Range = { start: number; end: number; length: number };
+  let longest: Range | null = null;
   let current: { start: number; length: number } | null = null;
 
-  items.forEach((item, index) => {
+  for (let index = 0; index < items.length; index++) {
+    const item = items[index];
     if (predicate(item.priceCategory)) {
       if (!current) {
         current = { start: index, length: 1 };
@@ -43,19 +45,18 @@ const findLongestSequence = (
         current.length++;
       }
 
-      if (!longest || current.length > longest.length) {
-        longest = { start: current.start, end: index, length: current.length };
+      const currentLength = current.length;
+      const currentStart = current.start;
+
+      if (!longest || currentLength > longest.length) {
+        longest = { start: currentStart, end: index, length: currentLength };
       }
     } else {
       current = null;
     }
-  });
-
-  if (!longest) {
-    return null;
   }
 
-  return { start: longest.start, end: longest.end };
+  return longest;
 };
 
 // Helper function to extract time range
@@ -85,7 +86,8 @@ const calculatePriceStats = (hourlyPrices: PriceData[]): PriceStats => {
   let maxPriceValue: number = minPriceValue;
   let priceSum: number = 0;
 
-  hourlyPrices.forEach((item, index) => {
+  for (let index = 0; index < hourlyPrices.length; index++) {
+    const item = hourlyPrices[index];
     const price = parsePrice(item.pricePerKWh);
     priceSum += price;
 
@@ -107,13 +109,13 @@ const calculatePriceStats = (hourlyPrices: PriceData[]): PriceStats => {
       maxPrice = item;
       maxPriceValue = price;
     }
-  });
+  }
 
   const avgPrice = priceSum / hourlyPrices.length;
 
   // Calculate trend for next 4 hours
   let trend: string | null = null;
-  if (currentPrice && currentIndex >= 0 && currentIndex < hourlyPrices.length - 1) {
+  if (currentPrice !== null && currentIndex >= 0 && currentIndex < hourlyPrices.length - 1) {
     const next4Hours = hourlyPrices.slice(currentIndex + 1, currentIndex + 5);
     if (next4Hours.length > 0) {
       const currentPriceValue = parsePrice(currentPrice.pricePerKWh);
@@ -139,7 +141,7 @@ const calculatePriceStats = (hourlyPrices: PriceData[]): PriceStats => {
 
   // Calculate average difference
   let avgDiff: string | null = null;
-  if (currentPrice) {
+  if (currentPrice !== null) {
     const diff = parsePrice(currentPrice.pricePerKWh) - avgPrice;
     avgDiff = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)} ct`;
   }
