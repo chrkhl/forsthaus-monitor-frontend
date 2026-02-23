@@ -51,7 +51,11 @@ const findLongestSequence = (
     }
   });
 
-  return longest ? { start: longest.start, end: longest.end } : null;
+  if (!longest) {
+    return null;
+  }
+
+  return { start: longest.start, end: longest.end };
 };
 
 // Helper function to extract time range
@@ -73,13 +77,13 @@ const calculatePriceStats = (hourlyPrices: PriceData[]): PriceStats => {
   const currentHour = new Date().getHours();
 
   // Single pass: find current price, min/max, and calculate average
-  let currentIndex = -1;
+  let currentIndex: number = -1;
   let currentPrice: PriceData | null = null;
-  let minPrice = hourlyPrices[0];
-  let maxPrice = hourlyPrices[0];
-  let minPriceValue = parsePrice(hourlyPrices[0].pricePerKWh);
-  let maxPriceValue = minPriceValue;
-  let priceSum = 0;
+  let minPrice: PriceData = hourlyPrices[0];
+  let maxPrice: PriceData = hourlyPrices[0];
+  let minPriceValue: number = parsePrice(hourlyPrices[0].pricePerKWh);
+  let maxPriceValue: number = minPriceValue;
+  let priceSum: number = 0;
 
   hourlyPrices.forEach((item, index) => {
     const price = parsePrice(item.pricePerKWh);
