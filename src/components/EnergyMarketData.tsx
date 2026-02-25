@@ -124,7 +124,7 @@ const calculatePriceStats = (hourlyPrices: PriceData[]): PriceStats => {
       const absDiff = Math.abs(priceDiff);
 
       if (absDiff < TREND_STABLE_THRESHOLD) {
-        trend = "➡ stabil";
+        trend = "&#9654; stabil";
       } else {
         const arrow = absDiff >= TREND_DOUBLE_ARROW_THRESHOLD
           ? (priceDiff < 0 ? "&#9660;&#9660;" : "&#9650;&#9650;")
