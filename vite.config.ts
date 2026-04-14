@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // Constants
-const BACKEND_PROD = "https://forsthaus-monitor-backend.kuehlchristian.workers.dev/";
+const BACKEND_PROD = "https://forsthaus-monitor-backend.kuehlchristian.workers.dev";
 const BACKEND_LOCAL = 'http://localhost:3000';
 
 // https://vite.dev/config/

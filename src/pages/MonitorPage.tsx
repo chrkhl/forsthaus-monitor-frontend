@@ -9,7 +9,7 @@ import { EnergyMarketData } from '../components/EnergyMarketData';
 import iconSettings from '../assets/icons/settings.png';
 
 // Constants
-const BACKEND_PROD = "https://forsthaus-monitor-backend.kuehlchristian.workers.dev/";
+const BACKEND_PROD = "https://forsthaus-monitor-backend.kuehlchristian.workers.dev";
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const LOADING_DELAY = 750; // ms
 
